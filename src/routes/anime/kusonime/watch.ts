@@ -1,6 +1,10 @@
-import { FastifyInstance, FastifyReply, FastifyRequest, RouteShorthandOptions } from 'fastify';
-
-import launchBrowser from '../../../utils/puppeteer';
+import launchBrowser from '@utils/puppeteer';
+import {
+  FastifyInstance,
+  FastifyReply,
+  FastifyRequest,
+  RouteShorthandOptions,
+} from 'fastify';
 
 import KusonimeUrlHelper from './url-helper';
 
@@ -35,7 +39,10 @@ const KusonimeWatch = async (fastify: FastifyInstance) => {
   fastify.get<{ Params: { endpoint: string } }>(
     '/:endpoint',
     opts,
-    async (request: FastifyRequest<{ Params: { endpoint: string } }>, reply: FastifyReply) => {
+    async (
+      request: FastifyRequest<{ Params: { endpoint: string } }>,
+      reply: FastifyReply,
+    ) => {
       let browser;
       let page;
       try {
@@ -51,12 +58,16 @@ const KusonimeWatch = async (fastify: FastifyInstance) => {
           const linkGroups: EpisodeGroup[] = [];
 
           dlDivs.forEach((dlDiv) => {
-            const title = (dlDiv.querySelector('.smokettlrh') as HTMLElement)?.textContent || '';
+            const title =
+              (dlDiv.querySelector('.smokettlrh') as HTMLElement)
+                ?.textContent || '';
             const linksDivs = dlDiv.querySelectorAll('.smokeurlrh');
             const linksArray: Link[] = [];
 
             linksDivs.forEach((linksDiv) => {
-              const resolutionMatch = (linksDiv.textContent || '').match(/(\d+)(p)?/);
+              const resolutionMatch = (linksDiv.textContent || '').match(
+                /(\d+)(p)?/,
+              );
               const resolution = resolutionMatch
                 ? `${resolutionMatch[1]}${resolutionMatch[2] || ''}`
                 : '';
@@ -97,7 +108,7 @@ const KusonimeWatch = async (fastify: FastifyInstance) => {
           await browser.close().catch(console.error);
         }
       }
-    }
+    },
   );
 };
 

@@ -1,6 +1,11 @@
-import { FastifyInstance, FastifyReply, FastifyRequest, RouteShorthandOptions } from 'fastify';
+import launchBrowser from '@utils/puppeteer';
+import {
+  FastifyInstance,
+  FastifyReply,
+  FastifyRequest,
+  RouteShorthandOptions,
+} from 'fastify';
 
-import launchBrowser from '../../../utils/puppeteer';
 
 import ManhwaindoUrlHelper from './url-helper';
 
@@ -23,7 +28,7 @@ const ManhwaindoSearch = async (fastify: FastifyInstance) => {
     opts,
     async (
       request: FastifyRequest<{ Params: { query: string; page: number } }>,
-      reply: FastifyReply
+      reply: FastifyReply,
     ) => {
       let browser;
       let page;
@@ -44,10 +49,15 @@ const ManhwaindoSearch = async (fastify: FastifyInstance) => {
           const list = Array.from(document.querySelectorAll('.listupd .bs'));
 
           return list.map((el) => {
-            const id = el.querySelector('a')?.getAttribute('href')?.split('/')[4];
+            const id = el
+              .querySelector('a')
+              ?.getAttribute('href')
+              ?.split('/')[4];
             const title = el.querySelector('a')?.getAttribute('title') || '';
             const url = el.querySelector('a')?.getAttribute('href');
-            const thumbnail = el.querySelector('.ts-post-image')?.getAttribute('src');
+            const thumbnail = el
+              .querySelector('.ts-post-image')
+              ?.getAttribute('src');
 
             return {
               id,
@@ -78,7 +88,7 @@ const ManhwaindoSearch = async (fastify: FastifyInstance) => {
           await browser.close().catch(console.error);
         }
       }
-    }
+    },
   );
 };
 

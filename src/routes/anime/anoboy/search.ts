@@ -1,6 +1,10 @@
-import { FastifyInstance, FastifyReply, FastifyRequest, RouteShorthandOptions } from 'fastify';
-
-import launchBrowser from '../../../utils/puppeteer';
+import launchBrowser from '@utils/puppeteer';
+import {
+  FastifyInstance,
+  FastifyReply,
+  FastifyRequest,
+  RouteShorthandOptions,
+} from 'fastify';
 
 import AnoboyUrlHelper from './url-helper';
 
@@ -23,7 +27,7 @@ const AnoboySearch = async (fastify: FastifyInstance) => {
     opts,
     async (
       request: FastifyRequest<{ Params: { query: string; page: number } }>,
-      reply: FastifyReply
+      reply: FastifyReply,
     ) => {
       let browser;
       let page;
@@ -34,16 +38,23 @@ const AnoboySearch = async (fastify: FastifyInstance) => {
         const query = encodeURI(request.params.query); // Encode the query to handle special characters
         const pageNumber = request.params.page || 1;
 
-        await page.goto(AnoboyUrlHelper.search(query, pageNumber), { waitUntil: 'networkidle0' });
+        await page.goto(AnoboyUrlHelper.search(query, pageNumber), {
+          waitUntil: 'networkidle0',
+        });
 
         const searchResult = await page.evaluate(() => {
           const list = Array.from(document.querySelectorAll('.listupd .bs'));
 
           return list.map((el) => {
-            const id = el.querySelector('.tip')?.getAttribute('href')?.split('/')[4];
+            const id = el
+              .querySelector('.tip')
+              ?.getAttribute('href')
+              ?.split('/')[4];
             const title = el.querySelector('.tip h2')?.textContent || '';
             const url = el.querySelector('.tip')?.getAttribute('href');
-            const thumbnail = el.querySelector('.ts-post-image')?.getAttribute('src');
+            const thumbnail = el
+              .querySelector('.ts-post-image')
+              ?.getAttribute('src');
 
             return {
               id,
@@ -75,7 +86,7 @@ const AnoboySearch = async (fastify: FastifyInstance) => {
           await browser.close().catch(console.error);
         }
       }
-    }
+    },
   );
 };
 

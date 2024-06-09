@@ -1,6 +1,11 @@
-import { FastifyInstance, FastifyReply, FastifyRequest, RouteShorthandOptions } from 'fastify';
+import launchBrowser from '@utils/puppeteer';
+import {
+  FastifyInstance,
+  FastifyReply,
+  FastifyRequest,
+  RouteShorthandOptions,
+} from 'fastify';
 
-import launchBrowser from '../../../utils/puppeteer';
 
 import AnoboyUrlHelper from './url-helper';
 
@@ -20,7 +25,10 @@ const AnoboyInfo = async (fastify: FastifyInstance) => {
   fastify.get<{ Params: { endpoint: string } }>(
     '/:endpoint',
     opts,
-    async (request: FastifyRequest<{ Params: { endpoint: string } }>, reply: FastifyReply) => {
+    async (
+      request: FastifyRequest<{ Params: { endpoint: string } }>,
+      reply: FastifyReply,
+    ) => {
       let browser;
       let page;
       try {
@@ -47,10 +55,11 @@ const AnoboyInfo = async (fastify: FastifyInstance) => {
         }
 
         const animeInfo = await page.evaluate(() => {
-          if (typeof window === 'undefined') throw new Error('window does not exiest');
+          if (typeof window === 'undefined')
+            throw new Error('window does not exiest');
 
           const additionalInfoSpans = Array.from(
-            document.querySelectorAll('.info-content span')
+            document.querySelectorAll('.info-content span'),
           ).map((span) => span.textContent);
           let type;
           let releaseDate;
@@ -66,11 +75,16 @@ const AnoboyInfo = async (fastify: FastifyInstance) => {
           }
 
           const genres = Array.from(document.querySelectorAll('.genxed a')).map(
-            (link) => link.textContent
+            (link) => link.textContent,
           );
 
-          const episodes = Array.from(document.querySelectorAll('.eplister li')).map((li) => {
-            const id = li.querySelector('a')?.getAttribute('href')?.split('/')[3];
+          const episodes = Array.from(
+            document.querySelectorAll('.eplister li'),
+          ).map((li) => {
+            const id = li
+              .querySelector('a')
+              ?.getAttribute('href')
+              ?.split('/')[3];
             const episodeNumber = li.querySelector('.epl-num')?.textContent;
             const url = li.querySelector('a')?.getAttribute('href');
             return {
@@ -84,13 +98,17 @@ const AnoboyInfo = async (fastify: FastifyInstance) => {
             id: window.location.href?.split('/')[4],
             title: document.querySelector('.entry-title')?.textContent,
             url: window.location.href,
-            thumbnail: document.querySelector('.thumb img')?.getAttribute('src'),
+            thumbnail: document
+              .querySelector('.thumb img')
+              ?.getAttribute('src'),
             releaseDate,
             description: document.querySelector('.entry-content')?.textContent,
             genres,
             type,
             status,
-            alternativeTitle: document.querySelector('.alter')?.textContent?.split(', '),
+            alternativeTitle: document
+              .querySelector('.alter')
+              ?.textContent?.split(', '),
             episodes,
           };
         });
@@ -109,7 +127,7 @@ const AnoboyInfo = async (fastify: FastifyInstance) => {
           await browser.close().catch(console.error);
         }
       }
-    }
+    },
   );
 };
 

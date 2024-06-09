@@ -26,7 +26,7 @@ const Manhwaindo = async (fastify: FastifyInstance) => {
           { name: 'Manga Search', path: '/search/:query/:page' },
         ],
       });
-    }
+    },
   );
 };
 

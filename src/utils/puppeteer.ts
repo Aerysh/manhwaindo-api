@@ -7,7 +7,11 @@ const launchBrowser = async () => {
 
     const browserInstance = await puppeteer.launch({
       headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox', '--window-size=1920,1080'],
+      args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--window-size=1920,1080',
+      ],
     });
     return browserInstance;
   } catch (err) {

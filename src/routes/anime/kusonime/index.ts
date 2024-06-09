@@ -26,7 +26,7 @@ const Kusonime = async (fastify: FastifyInstance) => {
           { name: 'Watch Anime Episodes', path: '/watch/:endpoint' },
         ],
       });
-    }
+    },
   );
 };
 

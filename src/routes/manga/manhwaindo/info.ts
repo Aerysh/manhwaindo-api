@@ -1,6 +1,10 @@
-import { FastifyInstance, FastifyReply, FastifyRequest, RouteShorthandOptions } from 'fastify';
-
-import launchBrowser from '../../../utils/puppeteer';
+import launchBrowser from '@utils/puppeteer';
+import {
+  FastifyInstance,
+  FastifyReply,
+  FastifyRequest,
+  RouteShorthandOptions,
+} from 'fastify';
 
 import ManhwaindoUrlHelper from './url-helper';
 
@@ -20,16 +24,22 @@ const ManhwaindoInfo = async (fastify: FastifyInstance) => {
   fastify.get<{ Params: { endpoint: string } }>(
     '/:endpoint',
     opts,
-    async (request: FastifyRequest<{ Params: { endpoint: string } }>, reply: FastifyReply) => {
+    async (
+      request: FastifyRequest<{ Params: { endpoint: string } }>,
+      reply: FastifyReply,
+    ) => {
       let browser;
       let page;
       try {
         browser = await launchBrowser();
         page = await browser.newPage();
 
-        const response = await page.goto(ManhwaindoUrlHelper.info(request.params.endpoint), {
-          waitUntil: 'networkidle0',
-        });
+        const response = await page.goto(
+          ManhwaindoUrlHelper.info(request.params.endpoint),
+          {
+            waitUntil: 'networkidle0',
+          },
+        );
 
         await page.waitForSelector('img', { timeout: 3000 });
 
@@ -41,11 +51,12 @@ const ManhwaindoInfo = async (fastify: FastifyInstance) => {
         }
 
         const mangaInfo = await page.evaluate(() => {
-          if (typeof window === 'undefined') throw new Error('window does not exists');
+          if (typeof window === 'undefined')
+            throw new Error('window does not exists');
 
-          const additionalInfo = Array.from(document.querySelectorAll('.tsinfo div')).map(
-            (div) => div.textContent
-          );
+          const additionalInfo = Array.from(
+            document.querySelectorAll('.tsinfo div'),
+          ).map((div) => div.textContent);
 
           let releaseDate;
           let status;
@@ -61,11 +72,16 @@ const ManhwaindoInfo = async (fastify: FastifyInstance) => {
           }
 
           const genres = Array.from(document.querySelectorAll('.mgen a')).map(
-            (link) => link.textContent
+            (link) => link.textContent,
           );
 
-          const chapters = Array.from(document.querySelectorAll('.eplister li')).map((li) => {
-            const id = li.querySelector('a')?.getAttribute('href')?.split('/')[3];
+          const chapters = Array.from(
+            document.querySelectorAll('.eplister li'),
+          ).map((li) => {
+            const id = li
+              .querySelector('a')
+              ?.getAttribute('href')
+              ?.split('/')[3];
             const chapterNumber = li.querySelector('.chapternum')?.textContent;
             const url = li.querySelector('a')?.getAttribute('href');
             return {
@@ -79,7 +95,9 @@ const ManhwaindoInfo = async (fastify: FastifyInstance) => {
             id: window.location.href?.split('/')[4],
             title: document.querySelector('.entry-title')?.textContent,
             url: window.location.href,
-            thumbnail: document.querySelector('.thumb img')?.getAttribute('src'),
+            thumbnail: document
+              .querySelector('.thumb img')
+              ?.getAttribute('src'),
             releaseDate,
             description: document.querySelector('.entry-content')?.textContent,
             genres,
@@ -107,7 +125,7 @@ const ManhwaindoInfo = async (fastify: FastifyInstance) => {
           await browser.close().catch(console.error);
         }
       }
-    }
+    },
   );
 };
 

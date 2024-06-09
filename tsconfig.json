@@ -1,12 +1,21 @@
 {
   "compilerOptions": {
-    "target": "es2015",
+    "target": "es2016",
     "module": "commonjs",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
+    "rootDir": "src",
     "outDir": "dist",
-    "rootDir": "."
-  }
+    "paths": {
+      "@routes/*": [
+        "./src/routes/*",
+      ],
+      "@utils/*": [
+        "./src/utils/*"
+      ]
+    },
+  },
+  "$schema": "https://json.schemastore.org/tsconfig"
 }
